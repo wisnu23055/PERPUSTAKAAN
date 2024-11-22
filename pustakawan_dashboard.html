@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pustakawan</title>
+    <style>
+        /* Modern Gradient Theme with Dark Mode Compatibility */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f6f9;
+            --text-color: #333;
+            --card-background: #ffffff;
+            --hover-color: #2980b9;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --text-color: #e0e0e0;
+                --card-background: #1e1e1e;
+                --primary-color: #4a90e2;
+                --secondary-color: #27ae60;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        h1 {
+            border-radius: 10px;
+            color: white;
+            font-size: 200%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 10px; /* Add margin for spacing */
+        }
+
+        button:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-background);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+
+        table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-transform: uppercase;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        table tr:nth-child(even) {
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+
+        .logout {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .logout button {
+            background-color: #e74c3c;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px; /* Reduce padding on mobile */
+            }
+            h1 {
+                margin-top: 0px;
+                font-size: 100%;
+                background-color: #3498db;
+                width: 100%;
+                padding: 20px 0px;
+                color: white;
+                border-radius: 8px;
+            }
+            table {
+                font-size: 14px; /* Adjust font size for mobile */
+                margin-bottom: 30px;
+                margin-top: 20px;
+            }
+
+            button {
+                font-size: 50%;
+                width: 100%; /* Make buttons full width on mobile */
+                padding: 10px; /* Adjust padding for buttons */
+            }
+            .logout button{
+                font-size: 100%;
+            }
+
+            h2 {
+                font-size: 1.5em; /* Adjust heading size for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Pustakawan</h1>
+    
+    <h2>Daftar Buku</h2>
+    <table id="booksTable">
+        <thead>
+            <tr>
+                <th>Nama Buku</th>
+                <th>Nomor Buku</th>
+                <th>Kategori</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Daftar buku akan dimuat di sini oleh JavaScript -->
+        </tbody>
+    </table>
+
+    <h2>Buku yang Dipinjam</h2>
+    <table id="borrowedBooksTable">
+        <thead>
+            <tr>
+                <th>Nama Buku</th>
+                <th>Nomor Buku</th>
+                <th>Kategori</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Daftar buku yang dipinjam akan dimuat di sini oleh JavaScript -->
+        </tbody>
+    </table>
+    
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Fungsi untuk mengambil data buku dari server
+        function getBooks() {
+            fetch('pustakawan_backend.php?action=getBooks')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('booksTable').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; // Kosongkan tabel sebelum menambahkan data baru
+
+                    data.forEach(book => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${book.name}</td>
+                            <td>${book.number}</td>
+                            <td>${book.category}</td>
+                            <td>
+                                <button onclick="borrowBook(${book.book_id})">Pinjam</button>
+                                <button onclick="returnBook(${book.book_id})">Kembalikan</button>
+                            </td>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching books:', error);
+                });
+        }
+
+        // Fungsi untuk mengambil daftar buku yang dipinjam
+        function getBorrowedBooks() {
+            fetch('pustakawan_backend.php?action=getBorrowedBooks')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('borrowedBooksTable').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; // Kosongkan tabel sebelum menambahkan data baru
+
+                    data.forEach(book => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${book.name}</td>
+                            <td>${book.number}</td>
+                            <td>${book.category}</td>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching borrowed books:', error);
+                });
+        }
+
+        // Fungsi untuk menangani peminjaman buku
+        function borrowBook(bookId) {
+            fetch('pustakawan_backend.php?action=borrowBook&book_id=' + bookId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Buku berhasil dipinjam!');
+                    getBooks(); // Refresh daftar buku setelah peminjaman
+                    getBorrowedBooks(); // Refresh daftar buku yang dipinjam
+                } else {
+                    alert('Gagal meminjam buku: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error borrowing book:', error);
+                alert('Error borrowing book: ' + error.message); // Tampilkan pesan error
+            });
+        }
+
+        // Fungsi untuk menangani pengembalian buku
+        function returnBook(bookId) {
+            fetch('pustakawan_backend.php?action=returnBook&book_id=' + bookId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Buku berhasil dikembalikan!');
+                    getBooks(); // Refresh daftar buku setelah pengembalian
+                    getBorrowedBooks(); // Refresh daftar buku yang dipinjam
+                } else {
+                    alert('Gagal mengembalikan buku: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error returning book:', error);
+                alert('Error returning book: ' + error.message); // Tampilkan pesan error
+            });
+        }
+
+        // Fungsi untuk logout
+        function logout() {
+            window.location.href = "index.html"; // Arahkan ke halaman login
+        }
+
+        // Muat data buku dan buku yang dipinjam saat halaman dimuat
+        window.onload = function() {
+            getBooks();
+            getBorrowedBooks();
+        }
+    </script>
+</body>
+</html>

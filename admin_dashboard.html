@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* Modern Gradient Theme with Dark Mode Compatibility */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f6f9;
+            --text-color: #333;
+            --card-background: #ffffff;
+            --hover-color: #2980b9;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --text-color: #e0e0e0;
+                --card-background: #1e1e1e;
+                --primary-color: #4a90e2;
+                --secondary-color: #27ae60;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            min-width: 300px;
+            width: 100%;
+            background: var(--card-background);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 15px;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        /* Truncate text */
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .delete-btn:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+
+        #add-book-form-container {
+            background: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 30px;
+        }
+
+        #add-book-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: var(--background-color);
+        }
+
+        /* Responsive Design */
+        @media screen and (min-width: 769px) {
+            table th {
+                width: 25%; /* Atur lebar kolom judul */
+            }
+
+            table td {
+                width: 25%; /* Atur lebar kolom data */
+            }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            table {
+                font-size: 14px;
+                width: 100%; /* Pastikan tabel menggunakan 100% lebar */
+                table-layout: fixed; /* Mengatur layout tabel agar lebih responsif */
+            }
+
+            table td, table th {
+                padding: 10px;
+                word-wrap: break-word; /* Memungkinkan teks panjang untuk dibungkus */
+            }
+
+            .truncate {
+                max-width: 100px;
+            }
+
+            #add-book-form-container {
+                width: 95%;
+                padding: 20px;
+                margin: 0 auto; /* Menjaga form di tengah */
+            }
+
+            header {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Mobile-specific adjustments */
+        @media screen and (max-width: 480px) {
+            table {
+                font-size: 10px;
+                width: 100%; /* Pastikan tabel menggunakan 100% lebar */
+                table-layout: fixed; /* Mengatur layout tabel agar lebih responsif */
+            }
+
+            table td, table th {
+                padding: 8px;
+                word-wrap: break-word; /* Memungkinkan teks panjang untuk dibungkus */
+            }
+
+            .truncate {
+                max-width: 80px;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <button onclick="showAddBookForm()">Tambah Buku</button>
+    </header>
+
+    <section>
+        <h2>Daftar Buku</h2>
+        <table id="book-list">
+            <thead>
+                <tr>
+                    <th>Nama Buku</th>
+                    <th>Nomor Buku</th>
+                    <th>Kategori</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Buku akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Daftar Pustakawan</h2>
+        <table id="pustakawan-list">
+            <thead>
+                <tr>
+                    <th>Nama Pustakawan</th>
+                    <th>Email</th>
+                    <th>Telepon</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Pustakawan akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Buku yang Dipinjam</h2>
+        <table id="borrowed-books-list">
+            <thead>
+                <tr>
+                    <th>Nama Peminjam</th>
+                    <th>Nama Buku</th>
+                    <th>Nomor Buku</th>
+                    <th>Kategori</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data Buku yang Dipinjam akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Form Tambah Buku -->
+    <div id="add-book-form-container" style="display:none;">
+        <h3>Tambah Buku Baru</h3>
+        <form id="add-book-form">
+            <label for="book-name">Nama Buku:</label>
+            <input type="text" id="book-name" name="name" required>
+            
+            <label for="book-number">Nomor Buku:</label>
+            <input type="text" id="book-number" name="number" required>
+            
+            <label for="book-category">Kategori:</label>
+            <input type="text" id="book-category" name="category" required>
+            
+            <button type="submit">Simpan Buku</button>
+            <button type="button" onclick="hideAddBookForm()">Batal</button>
+        </form>
+    </div>
+
+    <script>
+        // Fungsi Fetch Data
+        function fetchData() {
+            fetch('dashboard_backend.php?action=getData')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data.books) {
+                        populateTable('book-list', data.books);
+                    }
+                    if (data.pustakawan) {
+                        populateTable('pustakawan-list', data.pustakawan, true);
+                    }
+                    if (data.borrowedBooks) {
+                        populateTable('borrowed-books-list', data.borrowedBooks);
+                    }
+                })
+                .catch(error => {
+                    console.error('Terjadi kesalahan:', error);
+                });
+        }
+
+        // Fungsi Populate Table
+        function populateTable(id, data, isUser = false) {
+            const tableBody = document.getElementById(id).getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    if (isUser) {
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>${item.email}</td>
+                            <td>${item.phone}</td>
+                            <td><span class="delete-btn" onclick="deleteUser(${item.user_id})">Hapus</span></td>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>${item.number}</td>
+                            <td>${item.category}</td>
+                            <td><span class="delete-btn" onclick="deleteBook(${item.book_id})">Hapus</span></td>
+                        `;
+                    }
+                    tableBody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4">Tidak ada data untuk ditampilkan.</td>`;
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Fungsi Menampilkan Form Tambah Buku
+        function showAddBookForm() {
+            document.getElementById('add-book-form-container').style.display = 'block';
+        }
+
+        // Fungsi Menyembunyikan Form Tambah Buku
+        function hideAddBookForm() {
+            document.getElementById('add-book-form-container').style.display = 'none';
+        }
+
+        // Event Listener untuk Form Tambah Buku
+        document.getElementById('add-book-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('dashboard_backend.php?action=addBook', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Buku berhasil ditambahkan!');
+                    fetchData();
+                    hideAddBookForm();
+                } else {
+                    alert('Gagal menambahkan buku: ' + (data.error || 'Kesalahan tidak diketahui'));
+                }
+            })
+            .catch(error => {
+                console.error('Terjadi kesalahan:', error);
+            });
+        });
+
+        // Fungsi Hapus Buku
+        function deleteBook(bookId) {
+            if (confirm('Apakah Anda yakin ingin menghapus buku ini?')) {
+                fetch('dashboard_backend.php?action=deleteBook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: bookId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Buku berhasil dihapus!');
+                        fetchData();
+                    } else {
+                        alert('Gagal menghapus buku: ' + (data.error || 'Kesalahan tidak diketahui'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Terjadi kesalahan:', error);
+                });
+            }
+        }
+
+        // Fungsi Hapus Pustakawan
+        function deleteUser(userId) {
+            if (confirm('Apakah Anda yakin ingin menghapus pustakawan ini?')) {
+                fetch('dashboard_backend.php?action=deleteUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Pustakawan berhasil dihapus!');
+                        fetchData();
+                    } else {
+                        alert('Gagal menghapus pustakawan: ' + (data.error || 'Kesalahan tidak diketahui'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Terjadi kesalahan:', error);
+                });
+            }
+        }
+
+        // Panggil fetchData saat halaman dimuat
+        window.onload = fetchData;
+    </script>
+</body>
+</html>

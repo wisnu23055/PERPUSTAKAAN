@@ -31,15 +31,17 @@ if (isset($_GET['action'])) {
         $usersResult = $conn->query($usersQuery);
         $response['pustakawan'] = $usersResult ? $usersResult->fetch_all(MYSQLI_ASSOC) : [];
 
-        // Ambil data buku yang dipinjam
-        $loansQuery = "SELECT l.loan_id, u.name AS peminjam, b.name AS book_name, 
-                              b.number AS book_number, b.category
-                       FROM loans l
-                       JOIN users u ON l.user_id = u.user_id
-                       JOIN books b ON l.book_id = b.book_id
-                       WHERE l.status = 'borrowed'";
+
+        // Ambil data buku yang dipinjam beserta nama peminjam
+        $loansQuery = "SELECT l.loan_id, u.name AS user_name, b.name AS book_name, b.category 
+        FROM loans l
+        JOIN users u ON l.user_id = u.user_id
+        JOIN books b ON l.book_id = b.book_id
+        WHERE l.status = 'borrowed'";
         $loansResult = $conn->query($loansQuery);
         $response['borrowedBooks'] = $loansResult ? $loansResult->fetch_all(MYSQLI_ASSOC) : [];
+
+
 
         // Kirim response dalam format JSON
         header('Content-Type: application/json');

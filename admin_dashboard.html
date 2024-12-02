@@ -16,7 +16,7 @@
         }
 
         /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
+        @media (prefers-color-scheme: light) {
             :root {
                 --background-color: #121212;
                 --text-color: #e0e0e0;
@@ -269,8 +269,8 @@
                 <tr>
                     <th>Nama Peminjam</th>
                     <th>Nama Buku</th>
-                    <th>Nomor Buku</th>
-                    <th>Kategori</th>
+                    <th>Jenis</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -301,22 +301,17 @@
         // Fungsi Fetch Data
         function fetchData() {
             fetch('dashboard_backend.php?action=getData')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log(data);
+                    console.log(data);  // Log untuk melihat data yang diterima
                     if (data.books) {
-                        populateTable('book-list', data.books);
+                        populateTable('book-list', data.books, false, 'books');
                     }
                     if (data.pustakawan) {
                         populateTable('pustakawan-list', data.pustakawan, true);
                     }
                     if (data.borrowedBooks) {
-                        populateTable('borrowed-books-list', data.borrowedBooks);
+                        populateTable('borrowed-books-list', data.borrowedBooks, false, 'borrowedBooks');
                     }
                 })
                 .catch(error => {
@@ -324,8 +319,7 @@
                 });
         }
 
-        // Fungsi Populate Table
-        function populateTable(id, data, isUser = false) {
+        function populateTable(id, data, isUser = false, type = '') {
             const tableBody = document.getElementById(id).getElementsByTagName('tbody')[0];
             tableBody.innerHTML = '';
 
@@ -340,12 +334,21 @@
                             <td><span class="delete-btn" onclick="deleteUser(${item.user_id})">Hapus</span></td>
                         `;
                     } else {
-                        row.innerHTML = `
-                            <td>${item.name}</td>
-                            <td>${item.number}</td>
-                            <td>${item.category}</td>
-                            <td><span class="delete-btn" onclick="deleteBook(${item.book_id})">Hapus</span></td>
-                        `;
+                        if (type === 'books') {
+                            row.innerHTML = `
+                                <td>${item.name}</td>
+                                <td>${item.number}</td>
+                                <td>${item.category}</td>
+                                <td><span class="delete-btn" onclick="deleteBook(${item.book_id})">Hapus</span></td>
+                            `;
+                        } else if (type === 'borrowedBooks') {
+                            row.innerHTML = `
+                                <td>${item.user_name}</td>  <!-- Nama Peminjam -->
+                                <td>${item.book_name}</td>  <!-- Nama Buku -->
+                                <td>${item.category}</td>
+                                <td><span class="delete-btn" onclick="deleteLoan(${item.loan_id})">Hapus</span></td>
+                            `;
+                        }
                     }
                     tableBody.appendChild(row);
                 });
@@ -355,6 +358,8 @@
                 tableBody.appendChild(row);
             }
         }
+
+
 
         // Fungsi Menampilkan Form Tambah Buku
         function showAddBookForm() {
